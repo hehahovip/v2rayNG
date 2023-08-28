@@ -9,7 +9,6 @@ import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
@@ -21,7 +20,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,34 +31,25 @@ import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
-import com.v2ray.ang.databinding.ActivityMainBinding
+import com.v2ray.ang.databinding.ActivitySieMainBinding
 import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
 import com.v2ray.ang.service.V2RayServiceManager
 import com.v2ray.ang.util.*
 import com.v2ray.ang.viewmodel.MainViewModel
-import io.github.g00fy2.quickie.content.QRContent
 import kotlinx.coroutines.*
 import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
 import java.io.FileOutputStream
-import java.net.NetworkInterface
-import java.security.Key
-import java.security.MessageDigest
-import java.security.SecureRandom
-import java.util.Collections
 import java.util.concurrent.TimeUnit
-import javax.crypto.Cipher
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.DESKeySpec
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private lateinit var binding: ActivityMainBinding
+class MainSieActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var binding: ActivitySieMainBinding
 
-    private val adapter by lazy { MainRecyclerAdapter(this) }
+    private val adapter by lazy { MainSieRecyclerAdapter(this) }
     private val mainStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_MAIN, MMKV.MULTI_PROCESS_MODE) }
     private val settingsStorage by lazy { MMKV.mmkvWithID(MmkvManager.ID_SETTING, MMKV.MULTI_PROCESS_MODE) }
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -73,7 +62,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivitySieMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
         title = getString(R.string.title_server)
@@ -131,6 +120,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
         }
 
+//        loadNodesConfig()
+
+        wifiFunc()
     }
 
     private fun wifiFunc() {
@@ -146,7 +138,48 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     }
 
-      private fun setupViewModel() {
+    private fun loadNodesConfig() {
+        // 写入粘贴板数据，导入节点信息
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+//        var outfile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + "/2d73ede939df7d337b28f499db1d335c.out")
+//        var node = outfile.readText()
+
+
+        Thread (Runnable {
+//            var result = SIEUtils.downloadNodes()
+
+            var flag = true
+            externalCacheDir?.let {  flag = SIEUtils.downloadToFile(it.path ) }
+
+            if(flag) {
+                var file = File((externalCacheDir?.path ?: "") + "/nodes")
+                // TODO: MAC地址标准为大写，由于测试文件使用小写mac地址，这里传入小写mac地址， 正式使用时，改用大写
+                var nodesByteArray = SIEUtils.doCipher(file.readBytes(), SIEUtils.messMacAddr(SIEUtils.getMacAddress().toLowerCase()), "D")
+                if(nodesByteArray != null) {
+                    var nodes = String(nodesByteArray)
+                    println(nodes)
+
+                    ClipData.newPlainText("label", nodes)?.let{clipboardManager.setPrimaryClip(it)}
+//                    toast("写入剪贴板！")
+                    importClipboard()
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        clipboardManager.clearPrimaryClip()
+                    }
+                }
+            }
+
+        }).start()
+
+
+        return
+    }
+
+
+
+
+    private fun setupViewModel() {
         mainViewModel.updateListAction.observe(this) { index ->
             if (index >= 0) {
                 adapter.notifyItemChanged(index)
@@ -196,7 +229,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun migrateLegacy() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val result = AngConfigManager.migrateLegacyConfig(this@MainActivity)
+            val result = AngConfigManager.migrateLegacyConfig(this@MainSieActivity)
             if (result != null) {
                 launch(Dispatchers.Main) {
                     if (result) {
