@@ -46,7 +46,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
-class MainSieActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainSieActivity : BaseActivity() {
     private lateinit var binding: ActivitySieMainBinding
 
     private val adapter by lazy { MainSieRecyclerAdapter(this) }
@@ -101,11 +101,12 @@ class MainSieActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
 
 //        val toggle = ActionBarDrawerToggle(
-//                this, binding.drawerLayout, binding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-//        binding.drawerLayout.addDrawerListener(toggle)
+//                this, binding.drawerSieLayout, binding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+//        binding.drawerSieLayout.addDrawerListener(toggle)
 //        toggle.syncState()
 //        binding.navView.setNavigationItemSelectedListener(this)
 //        binding.version.text = "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})"
+
 
         setupViewModel()
         copyAssets()
@@ -174,9 +175,6 @@ class MainSieActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
         return
     }
-
-
-
 
     private fun setupViewModel() {
         mainViewModel.updateListAction.observe(this) { index ->
@@ -614,39 +612,12 @@ class MainSieActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
+//        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            binding.drawerLayout.closeDrawer(GravityCompat.START)
+//        } else {
             //super.onBackPressed()
             onBackPressedDispatcher.onBackPressed()
-        }
+//        }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            //R.id.server_profile -> activityClass = MainActivity::class.java
-            R.id.sub_setting -> {
-                startActivity(Intent(this, SubSettingActivity::class.java))
-            }
-            R.id.settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java)
-                        .putExtra("isRunning", mainViewModel.isRunning.value == true))
-            }
-            R.id.user_asset_setting -> {
-                startActivity(Intent(this, UserAssetActivity::class.java))
-            }
-            R.id.feedback -> {
-                Utils.openUri(this, AppConfig.v2rayNGIssues)
-            }
-            R.id.promotion -> {
-                Utils.openUri(this, "${Utils.decode(AppConfig.promotionUrl)}?t=${System.currentTimeMillis()}")
-            }
-            R.id.logcat -> {
-                startActivity(Intent(this, LogcatActivity::class.java))
-            }
-        }
-        binding.drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
 }
