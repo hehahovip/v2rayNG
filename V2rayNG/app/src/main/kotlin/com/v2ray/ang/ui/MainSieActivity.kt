@@ -2,44 +2,32 @@ package com.v2ray.ang.ui
 
 import android.Manifest
 import android.content.*
-import android.content.res.ColorStateList
-import android.net.Uri
 import android.net.VpnService
 import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.view.GravityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.navigation.NavigationView
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
-import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.databinding.ActivitySieMainBinding
-import com.v2ray.ang.dto.EConfigType
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
 import com.v2ray.ang.service.V2RayServiceManager
 import com.v2ray.ang.util.*
 import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.*
-import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
@@ -99,15 +87,6 @@ class MainSieActivity : BaseActivity() {
         mItemTouchHelper = ItemTouchHelper(callback)
         mItemTouchHelper?.attachToRecyclerView(binding.recyclerView)
 
-
-//        val toggle = ActionBarDrawerToggle(
-//                this, binding.drawerSieLayout, binding.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-//        binding.drawerSieLayout.addDrawerListener(toggle)
-//        toggle.syncState()
-//        binding.navView.setNavigationItemSelectedListener(this)
-//        binding.version.text = "v${BuildConfig.VERSION_NAME} (${SpeedtestUtil.getLibVersion()})"
-
-
         setupViewModel()
         copyAssets()
         migrateLegacy()
@@ -121,9 +100,9 @@ class MainSieActivity : BaseActivity() {
                 }
         }
 
-//        loadNodesConfig()
+        initLoadNodesConfig()
 
-        wifiFunc()
+//        wifiFunc()
     }
 
     private fun wifiFunc() {
@@ -134,46 +113,58 @@ class MainSieActivity : BaseActivity() {
             Log.d("v2rayNG","wifiManager is disabled!")
         }
 
-
         var p2pManager = applicationContext.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+    }
 
+    private fun initLoadNodesConfig() {
+        var checkInitFlag = mainStorage.getBoolean("init", false)
+        if(!checkInitFlag) {
+            loadNodesConfig()
+        }
+    }
+
+    private fun updateSub() {
+        // delete old nodes
+        MmkvManager.removeAllServer()
+
+
+        toast("更新线路中")
+        loadNodesConfig()
+        setupViewModel()
+        mainViewModel.reloadServerList()
+//        mainViewModel.reloadServerList()
     }
 
     private fun loadNodesConfig() {
-        // 写入粘贴板数据，导入节点信息
-        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-//        var outfile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS + "/2d73ede939df7d337b28f499db1d335c.out")
-//        var node = outfile.readText()
-
-
-        Thread (Runnable {
-//            var result = SIEUtils.downloadNodes()
-
+        val scope = CoroutineScope(Job() + Dispatchers.IO)
+        val job = scope.launch {
+            // 写入粘贴板数据，导入节点信息
+            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var flag = true
             externalCacheDir?.let {  flag = SIEUtils.downloadToFile(it.path ) }
 
             if(flag) {
-                var file = File((externalCacheDir?.path ?: "") + "/nodes")
-                // TODO: MAC地址标准为大写，由于测试文件使用小写mac地址，这里传入小写mac地址， 正式使用时，改用大写
-                var nodesByteArray = SIEUtils.doCipher(file.readBytes(), SIEUtils.messMacAddr(SIEUtils.getMacAddress().toLowerCase()), "D")
-                if(nodesByteArray != null) {
-                    var nodes = String(nodesByteArray)
-                    println(nodes)
+                var file = File((externalCacheDir?.path ?: "") + SIEUtils.DOWNLOAD_FILE_SUFFIX)
+                var nodesByteArray = SIEUtils.doCipher(file.readBytes())
+                launch(Dispatchers.Main) {
+                    if(nodesByteArray != null) {
+                        var nodes = String(nodesByteArray)
 
-                    ClipData.newPlainText("label", nodes)?.let{clipboardManager.setPrimaryClip(it)}
-//                    toast("写入剪贴板！")
-                    importClipboard()
+                        ClipData.newPlainText("label", nodes)?.let{clipboardManager.setPrimaryClip(it)}
+                        importClipboard()
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        clipboardManager.clearPrimaryClip()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            clipboardManager.clearPrimaryClip()
+                        }
+
+                        mainStorage.encode("init", true)
+                        mainStorage.sync()
                     }
                 }
+
             }
-
-        }).start()
-
-        return
+        }
     }
 
     private fun setupViewModel() {
@@ -287,7 +278,7 @@ class MainSieActivity : BaseActivity() {
         }
 
         R.id.sie_sub_update -> {
-//            restartV2Ray()
+            updateSub()
             true
         }
 
@@ -302,51 +293,6 @@ class MainSieActivity : BaseActivity() {
         }
 
         else -> super.onOptionsItemSelected(item)
-    }
-
-    private fun importManually(createConfigType : Int) {
-        startActivity(
-            Intent()
-                .putExtra("createConfigType", createConfigType)
-                .putExtra("subscriptionId", mainViewModel.subscriptionId)
-                .setClass(this, ServerActivity::class.java)
-        )
-    }
-
-    /**
-     * import config from qrcode
-     */
-    fun importQRcode(forConfig: Boolean): Boolean {
-//        try {
-//            startActivityForResult(Intent("com.google.zxing.client.android.SCAN")
-//                    .addCategory(Intent.CATEGORY_DEFAULT)
-//                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP), requestCode)
-//        } catch (e: Exception) {
-        RxPermissions(this)
-                .request(Manifest.permission.CAMERA)
-                .subscribe {
-                    if (it)
-                        if (forConfig)
-                            scanQRCodeForConfig.launch(Intent(this, ScannerActivity::class.java))
-                        else
-                            scanQRCodeForUrlToCustomConfig.launch(Intent(this, ScannerActivity::class.java))
-                    else
-                        toast(R.string.toast_permission_denied)
-                }
-//        }
-        return true
-    }
-
-    private val scanQRCodeForConfig = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            importBatchConfig(it.data?.getStringExtra("SCAN_RESULT"))
-        }
-    }
-
-    private val scanQRCodeForUrlToCustomConfig = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == RESULT_OK) {
-            importConfigCustomUrl(it.data?.getStringExtra("SCAN_RESULT"))
-        }
     }
 
     /**
@@ -381,188 +327,6 @@ class MainSieActivity : BaseActivity() {
             mainViewModel.reloadServerList()
         } else {
             toast(R.string.toast_failure)
-        }
-    }
-
-    fun importConfigCustomClipboard()
-            : Boolean {
-        try {
-            val configText = Utils.getClipboard(this)
-            if (TextUtils.isEmpty(configText)) {
-                toast(R.string.toast_none_data_clipboard)
-                return false
-            }
-            importCustomizeConfig(configText)
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    /**
-     * import config from local config file
-     */
-    fun importConfigCustomLocal(): Boolean {
-        try {
-            showFileChooser()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-        return true
-    }
-
-    fun importConfigCustomUrlClipboard()
-            : Boolean {
-        try {
-            val url = Utils.getClipboard(this)
-            if (TextUtils.isEmpty(url)) {
-                toast(R.string.toast_none_data_clipboard)
-                return false
-            }
-            return importConfigCustomUrl(url)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-    }
-
-    /**
-     * import config from url
-     */
-    fun importConfigCustomUrl(url: String?): Boolean {
-        try {
-            if (!Utils.isValidUrl(url)) {
-                toast(R.string.toast_invalid_url)
-                return false
-            }
-            lifecycleScope.launch(Dispatchers.IO) {
-                val configText = try {
-                    Utils.getUrlContentWithCustomUserAgent(url)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    ""
-                }
-                launch(Dispatchers.Main) {
-                    importCustomizeConfig(configText)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-        return true
-    }
-
-    /**
-     * import config from sub
-     */
-    fun importConfigViaSub()
-            : Boolean {
-        try {
-            toast(R.string.title_sub_update)
-            MmkvManager.decodeSubscriptions().forEach {
-                if (TextUtils.isEmpty(it.first)
-                        || TextUtils.isEmpty(it.second.remarks)
-                        || TextUtils.isEmpty(it.second.url)
-                ) {
-                    return@forEach
-                }
-                if (!it.second.enabled) {
-                    return@forEach
-                }
-                val url = Utils.idnToASCII(it.second.url)
-                if (!Utils.isValidUrl(url)) {
-                    return@forEach
-                }
-                Log.d(ANG_PACKAGE, url)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val configText = try {
-                        Utils.getUrlContentWithCustomUserAgent(url)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        launch(Dispatchers.Main) {
-                            toast("\"" + it.second.remarks + "\" " + getString(R.string.toast_failure))
-                        }
-                        return@launch
-                    }
-                    launch(Dispatchers.Main) {
-                        importBatchConfig(configText, it.first)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
-        }
-        return true
-    }
-
-    /**
-     * show file chooser
-     */
-    private fun showFileChooser() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "*/*"
-        intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-        try {
-            chooseFileForCustomConfig.launch(Intent.createChooser(intent, getString(R.string.title_file_chooser)))
-        } catch (ex: ActivityNotFoundException) {
-            toast(R.string.toast_require_file_manager)
-        }
-    }
-
-    private val chooseFileForCustomConfig = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val uri = it.data?.data
-        if (it.resultCode == RESULT_OK && uri != null) {
-            readContentFromUri(uri)
-        }
-    }
-
-    /**
-     * read content from uri
-     */
-    private fun readContentFromUri(uri: Uri) {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-        RxPermissions(this)
-                .request(permission)
-                .subscribe {
-                    if (it) {
-                        try {
-                            contentResolver.openInputStream(uri).use { input ->
-                                importCustomizeConfig(input?.bufferedReader()?.readText())
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    } else
-                        toast(R.string.toast_permission_denied)
-                }
-    }
-
-    /**
-     * import customize config
-     */
-    fun importCustomizeConfig(server: String?) {
-        try {
-            if (server == null || TextUtils.isEmpty(server)) {
-                toast(R.string.toast_none_data)
-                return
-            }
-            mainViewModel.appendCustomConfigServer(server)
-            mainViewModel.reloadServerList()
-            toast(R.string.toast_success)
-            //adapter.notifyItemInserted(mainViewModel.serverList.lastIndex)
-        } catch (e: Exception) {
-            ToastCompat.makeText(this, "${getString(R.string.toast_malformed_josn)} ${e.cause?.message}", Toast.LENGTH_LONG).show()
-            e.printStackTrace()
-            return
         }
     }
 
