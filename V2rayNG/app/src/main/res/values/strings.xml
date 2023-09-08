@@ -218,7 +218,7 @@
     <string name="title_sie_ping_all_server">测试全部配置Tcping</string>
     <string name="title_sie_service_restart">重启服务</string>
     <string name="title_sie_sub_update">更新线路</string>
-    <string name="title_sie_setting">版本</string>
+    <string name="title_sie_setting">设置</string>
     <string name="title_sie_version">版本</string>
 
     <string-array name="share_method">

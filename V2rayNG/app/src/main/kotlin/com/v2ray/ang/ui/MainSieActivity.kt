@@ -288,7 +288,7 @@ class MainSieActivity : BaseActivity() {
         }
 
         R.id.sie_version -> {
-//            restartV2Ray()
+            version()
             true
         }
 
@@ -382,6 +382,10 @@ class MainSieActivity : BaseActivity() {
             //super.onBackPressed()
             onBackPressedDispatcher.onBackPressed()
 //        }
+    }
+
+    fun version() {
+        startActivity(Intent(this, VersionActivity::class.java))
     }
 
 }
