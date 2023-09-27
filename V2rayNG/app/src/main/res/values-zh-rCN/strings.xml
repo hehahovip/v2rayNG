@@ -182,6 +182,8 @@
     <string name="title_sie_sub_update">更新线路</string>
     <string name="title_sie_setting">设置</string>
     <string name="title_sie_version">版本</string>
+    <string name="title_sie_cpu">处理器</string>
+    <string name="title_sie_hifi">热点名称</string>
 
     <string name="title_sub_setting">订阅分组设置</string>
     <string name="sub_setting_remarks">备注</string>

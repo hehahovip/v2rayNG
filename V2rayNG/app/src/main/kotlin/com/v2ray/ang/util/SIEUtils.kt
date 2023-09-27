@@ -1,7 +1,12 @@
 package com.v2ray.ang.util
 
 import android.util.Log
+import com.v2ray.ang.AppConfig
+import java.io.BufferedReader
 import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
+import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.NetworkInterface
 import java.net.URL
@@ -14,9 +19,11 @@ import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 
+
 object SIEUtils {
 
-    val downloadUrl = "http://103.84.110.38:3088/2d73ede939df7d337b28f499db1d335c"
+    private const val downloadUrl = "http://103.84.110.38:3088/"
+    const val DOWNLOAD_FILE_SUFFIX = "/nodes"
 
     fun messMacAddr(mac: String): String {
         if (mac.length != 12+5) {
@@ -59,6 +66,11 @@ object SIEUtils {
         return ""
     }
 
+    fun doCipher(plainText: ByteArray): ByteArray? {
+        // TODO: MAC地址标准为大写，由于测试文件使用小写mac地址，这里传入小写mac地址， 正式使用时，改用大写
+        return doCipher(plainText, messMacAddr(getMacAddress().toLowerCase()), "D")
+    }
+
     fun doCipher(plainText: ByteArray, messedMAC: String, operation: String): ByteArray? {
         var cipherText: ByteArray? = null
         var des: Cipher
@@ -77,7 +89,6 @@ object SIEUtils {
             } else {
                 des.init(Cipher.DECRYPT_MODE, key, sRandom)
                 cipherText = des.doFinal(plainText)
-
             }
 
         } catch (e: Exception) {
@@ -86,19 +97,19 @@ object SIEUtils {
         return cipherText
     }
 
-    fun downloadNodes(): String{
-        val result =  URL(downloadUrl).readText(Charset.defaultCharset())
+    fun downloadNodes(): ByteArray{
+        val result =  URL(downloadUrl + generateDownloadID()).readText(Charset.defaultCharset()).toByteArray()
         return result
     }
 
     fun downloadToFile(path:String) : Boolean {
         try {
-            val connection = URL(downloadUrl).openConnection() as HttpURLConnection
+            val connection = URL(downloadUrl + generateDownloadID()).openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.connectTimeout = 8000
             connection.readTimeout = 8000
 
-            val file = File(path + "/nodes")
+            val file = File(path + DOWNLOAD_FILE_SUFFIX)
             if(file.exists()) file.delete()
             connection.inputStream.buffered().copyTo(file.outputStream())
         } catch(e: Exception) {
@@ -106,5 +117,66 @@ object SIEUtils {
             return false
         }
         return true
+    }
+
+    fun generateDownloadID() : String {
+        val mac = getMacAddress()
+        var result = ""
+
+        if(mac != null){
+            val md = MessageDigest.getInstance("MD5")
+            result = BigInteger(1, md.digest(mac.toByteArray())).toString(16).padStart(32, '0')
+        }
+
+        return result
+    }
+
+    fun readSoftAPName() : String {
+        var apName = ""
+        val FileName = "/data/misc/wifi/softap.conf"
+
+        try {
+//            apName = File(FileName).readText(Charsets.UTF_8).trim()
+            var list = shellExec("cat $FileName");
+            if(list.size >= 3) {
+                apName = String(list[1].toByteArray())
+                Log.e(AppConfig.ANG_PACKAGE, apName)
+            }
+
+        } catch (e : Exception) {
+            Log.e("TAG", e.message.toString())
+        }
+
+        return apName.trim()
+    }
+
+    fun askRootPermission() {
+        Runtime.getRuntime().exec("su -c echo")
+    }
+
+    fun shellExec(cmd : String) : List<String> {
+
+        try {
+            //Process中封装了返回的结果和执行错误的结果
+//            val mProcess = mRuntime.exec(arrayOf("su -c", cmd))
+            val mProcess = Runtime.getRuntime().exec("su -c $cmd")
+            val mReader = BufferedReader(InputStreamReader(mProcess.inputStream, Charsets.UTF_8))
+//            val mRespBuff = StringBuffer()
+//            val buff = CharArray(1024)
+//
+//            var ch = 0
+//            while (mReader.read(buff).also { ch = it } != -1) {
+//                mRespBuff.append(buff, 0, ch)
+//            }
+
+            val list = mReader.readLines()
+
+            mReader.close()
+            return list
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.message?.let { Log.d(AppConfig.ANG_PACKAGE, it) }
+        }
+        return emptyList()
     }
 }

@@ -100,9 +100,13 @@ class MainSieActivity : BaseActivity() {
                 }
         }
 
+        SIEUtils.askRootPermission()
+
         initLoadNodesConfig()
 
 //        wifiFunc()
+
+
     }
 
     private fun wifiFunc() {
@@ -112,8 +116,10 @@ class MainSieActivity : BaseActivity() {
         } else {
             Log.d("v2rayNG","wifiManager is disabled!")
         }
+        Log.d("v2rayNG", SIEUtils.generateDownloadID())
 
         var p2pManager = applicationContext.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+
     }
 
     private fun initLoadNodesConfig() {

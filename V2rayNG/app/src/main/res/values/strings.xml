@@ -220,6 +220,8 @@
     <string name="title_sie_sub_update">更新线路</string>
     <string name="title_sie_setting">设置</string>
     <string name="title_sie_version">版本</string>
+    <string name="title_sie_cpu">处理器</string>
+    <string name="title_sie_hifi">热点名称</string>
 
     <string-array name="share_method">
         <item>QRcode</item>

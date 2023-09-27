@@ -7,111 +7,139 @@
     android:orientation="vertical"
     tools:context=".ui.VersionActivity">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_view"
+    <!-- 版本 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="5dp">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
-            app:cardCornerRadius="5dp">
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/info_container"
-                android:clickable="true"
-                android:focusable="true"
-                android:nextFocusRight="@+id/layout_share"
-                android:background="?android:attr/selectableItemBackground"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/server_height"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:lines="1"
+                android:paddingStart="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/title_sie_version"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/version_text_sp" />
 
-                <LinearLayout
-                    android:id="@+id/layout_indicator"
-                    android:layout_width="10dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:orientation="vertical" >
+            <TextView
+                android:id="@+id/version_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="right|center"
+                android:lines="1"
+                android:paddingRight="30dp"
+                android:textColor="@color/colorTextGray"
+                android:textSize="@dimen/version_text_sp"
+                android:text="v1.0.0" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-                </LinearLayout>
+    <!-- cpu -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="5dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:orientation="vertical"
-                    android:paddingStart="5dp">
+        <LinearLayout
+            android:id="@+id/info_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/tv_cpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:lines="1"
+                android:paddingStart="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/title_sie_cpu"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/version_text_sp" />
 
-                    <TextView
-                        android:id="@+id/tv_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="5dp"
-                        android:lines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="@color/fab_orange_dark"
-                        android:textSize="10sp" />
+            <TextView
+                android:id="@+id/version_cpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="right|center"
+                android:lines="1"
+                android:paddingRight="30dp"
+                android:textColor="@color/colorTextGray"
+                android:textSize="@dimen/version_text_sp"
+                android:text="Snapdragon 845" />
 
-                </LinearLayout>
+        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="5"
-                    android:gravity="left"
-                    android:orientation="horizontal"
-                    android:paddingLeft="15dp">
+    </androidx.cardview.widget.CardView>
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="right"
-                        android:orientation="horizontal">
-                        <!-- 线路名称文本显示 -->
-                        <TextView
-                            android:id="@+id/tv_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:maxLines="2"
-                            android:minLines="1"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+    <!-- 热点 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="5dp">
 
-                    </LinearLayout>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <!-- 线路测试结果文本显示 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:id="@+id/layout_remove"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/server_height"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_wifiap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:lines="1"
+                android:paddingStart="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/title_sie_hifi"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/version_text_sp" />
 
-                        <TextView
-                            android:id="@+id/tv_test_result"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:lines="1"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                            android:textColor="@color/colorPing"
-                            android:gravity="right|center"
-                            android:paddingRight="15dp"
-                            android:textSize="12sp"
-                            tools:text="214ms" />
+            <TextView
+                android:id="@+id/version_wifiap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="right|center"
+                android:lines="1"
+                android:paddingRight="30dp"
+                android:textColor="@color/colorTextGray"
+                android:textSize="@dimen/version_text_sp"
+                android:text="Snapdragon 845" />
 
-                    </LinearLayout>
-                </LinearLayout>
+        </LinearLayout>
 
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>
