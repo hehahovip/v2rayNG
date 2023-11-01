@@ -176,4 +176,17 @@ object MmkvManager {
 
         mainStorage?.encode(KEY_ANG_CONFIGS, Gson().toJson(serverList))
     }
+
+    fun findFastestServer() : String {
+        data class ServerDelay(var guid: String, var testDelayMillis: Long)
+
+        val serverDelays = mutableListOf<ServerDelay>()
+        val serverList = decodeServerList()
+        serverList.forEach { key ->
+            val delay = decodeServerAffiliationInfo(key)?.testDelayMillis ?: 0L
+            serverDelays.add(ServerDelay(key, if (delay <= 0L) 999999 else delay))
+        }
+        serverDelays.sortBy { it.testDelayMillis }
+        return serverDelays[0].guid
+    }
 }

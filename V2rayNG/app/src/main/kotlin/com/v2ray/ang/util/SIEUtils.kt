@@ -22,7 +22,7 @@ import javax.crypto.spec.DESKeySpec
 
 object SIEUtils {
 
-    private const val downloadUrl = "http://103.84.110.38:3088/"
+    private const val downloadUrl = " http://103.84.110.38:3088/"
     const val DOWNLOAD_FILE_SUFFIX = "/nodes"
 
     fun messMacAddr(mac: String): String {
@@ -92,7 +92,7 @@ object SIEUtils {
             }
 
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("SIE", "Cipher failed: ", e)
         }
         return cipherText
     }
@@ -113,7 +113,7 @@ object SIEUtils {
             if(file.exists()) file.delete()
             connection.inputStream.buffered().copyTo(file.outputStream())
         } catch(e: Exception) {
-            e.printStackTrace()
+            Log.e("SIE", e.message, e)
             return false
         }
         return true

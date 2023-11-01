@@ -14,6 +14,7 @@ import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tbruyelle.rxpermissions.RxPermissions
@@ -105,8 +106,21 @@ class MainSieActivity : BaseActivity() {
         initLoadNodesConfig()
 
 //        wifiFunc()
+        checkAutoStart()
+    }
 
+    private fun checkAutoStart() {
+        val defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val autoStartFlag = defaultSharedPreferences.getBoolean(AppConfig.PREF_AUTO_START, false)
 
+        if(autoStartFlag) {
+//            mainViewModel.testAllRealPing()
+            var fastserver = MmkvManager.findFastestServer()
+            Log.d("SIE", fastserver)
+            var server = MmkvManager.decodeServerConfig(fastserver)
+            Log.d("SIE", server.toString())
+
+        }
     }
 
     private fun wifiFunc() {
@@ -289,7 +303,7 @@ class MainSieActivity : BaseActivity() {
         }
 
         R.id.sie_setting -> {
-//            restartV2Ray()
+            setting()
             true
         }
 
@@ -392,6 +406,10 @@ class MainSieActivity : BaseActivity() {
 
     fun version() {
         startActivity(Intent(this, VersionActivity::class.java))
+    }
+
+    fun setting() {
+        startActivity(Intent(this, SettingsSieActivity::class.java))
     }
 
 }

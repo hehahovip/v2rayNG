@@ -93,6 +93,7 @@
     <string name="title_settings">设置</string>
     <string name="title_advanced">进阶设置</string>
     <string name="title_vpn_settings">VPN 设置</string>
+    <string name="title_sie_settings">规则设置</string>
     <string name="title_pref_per_app_proxy">分应用代理</string>
     <string name="summary_pref_per_app_proxy">常规:勾选的App被代理,未勾选的直连;\n绕行模式:勾选的App直连,未勾选的被代理.\n不明白者在菜单中选择自动选中需代理应用</string>
 
@@ -115,8 +116,9 @@
     <string name="summary_pref_prefer_ipv6">App优先使用IPv6地址连接服务器,同时开启VPN的IPv6路由</string>
 
     <string name="title_pref_routing">路由设置</string>
+    <string name="title_pref_rule_setting">规则设置</string>
     <string name="title_pref_routing_domain_strategy">域名策略</string>
-    <string name="title_pref_routing_mode">预定义规则</string>
+    <string name="title_pref_routing_mode">路由规则</string>
     <string name="title_pref_routing_custom">自定义规则</string>
 
     <string name="title_pref_remote_dns">远程DNS (可选)</string>
@@ -149,6 +151,8 @@
     <string name="title_pref_start_scan_immediate">立即启动扫码</string>
     <string name="summary_pref_start_scan_immediate">启动时立即打开相机扫描，否则可在工具栏选择扫码或选照片</string>
 
+    <string name="summary_pref_auto_start">自动选择线路启动 (默认关闭)</string>
+
     <string name="title_pref_feedback">反馈</string>
     <string name="summary_pref_feedback">反馈改进或漏洞至 GitHub</string>
     <string name="summary_pref_tg_group">加入Telegram Group</string>
@@ -163,6 +167,7 @@
     <string name="title_language">语言</string>
     <string name="title_ui_settings">用户界面设置</string>
 
+    <string name="title_pref_auto_start">自动选择线路</string>
     <string name="title_logcat">Logcat</string>
     <string name="logcat_copy">复制</string>
     <string name="logcat_clear">清除</string>
