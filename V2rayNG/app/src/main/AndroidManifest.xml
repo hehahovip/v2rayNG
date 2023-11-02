@@ -41,7 +41,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name=".AngApplication"
+        android:name="com.dd.sie.AngApplication"
         android:allowBackup="true"
         android:banner="@mipmap/ic_banner"
         android:icon="@mipmap/ic_launcher"
@@ -187,8 +187,8 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.v2ray.ang.action.widget.click" />
-                <action android:name="com.v2ray.ang.action.activity" />
+                <action android:name="com.dd.sie.action.widget.click" />
+                <action android:name="com.dd.sie.action.activity" />
             </intent-filter>
         </receiver>
 

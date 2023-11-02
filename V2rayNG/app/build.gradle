@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.v2ray.ang"
+        applicationId "com.dd.sie"
         minSdkVersion 21
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
@@ -77,7 +77,7 @@ android {
     android.applicationVariants.all { variant ->
         // assign different version code for each output
         variant.outputs.each { output ->
-            output.outputFileName = "v2rayNG_" + variant.versionName + "_" + output.getFilter(com.android.build.OutputFile.ABI) + ".apk"
+            output.outputFileName = "SIE_" + variant.versionName + "_" + output.getFilter(com.android.build.OutputFile.ABI) + ".apk"
 
                 output.versionCodeOverride =
                     project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) *
@@ -89,8 +89,8 @@ android {
         viewBinding true
         buildConfig true
     }
-    namespace 'com.v2ray.ang'
-    testNamespace 'com.v2ray.angTest'
+    namespace 'com.dd.sie'
+    testNamespace 'com.dd.sieTest'
 }
 
 dependencies {
