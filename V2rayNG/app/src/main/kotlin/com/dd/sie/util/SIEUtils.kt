@@ -66,8 +66,7 @@ object SIEUtils {
     }
 
     fun doCipher(plainText: ByteArray): ByteArray? {
-        // TODO: MAC地址标准为大写，由于测试文件使用小写mac地址，这里传入小写mac地址， 正式使用时，改用大写
-        return doCipher(plainText, messMacAddr(getMacAddress().toUpperCase()), "D")
+        return doCipher(plainText, messMacAddr(getMacAddress().uppercase()), "D")
     }
 
     fun doCipher(plainText: ByteArray, messedMAC: String, operation: String): ByteArray? {
