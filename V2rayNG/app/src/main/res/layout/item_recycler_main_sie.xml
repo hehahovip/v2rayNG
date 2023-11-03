@@ -43,7 +43,7 @@
                 android:paddingStart="5dp">
 
                 <ImageView
-                    android:layout_width="40dp"
+                    android:layout_width="35dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_node_foreground"/>
 
