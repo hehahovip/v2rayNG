@@ -2,6 +2,7 @@ package com.dd.sie.ui
 
 import android.Manifest
 import android.content.*
+import android.content.res.ColorStateList
 import android.net.VpnService
 import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pManager
@@ -13,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -198,13 +200,13 @@ class MainSieActivity : BaseActivity() {
         mainViewModel.isRunning.observe(this) { isRunning ->
             adapter.isRunning = isRunning
             if (isRunning) {
-//                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorSelected))
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorSelected))
                 setTestState(getString(R.string.connection_connected))
-//                binding.layoutTest.isFocusable = true
+                binding.layoutTest.isFocusable = true
             } else {
-//                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorUnselected))
+                binding.fab.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorUnselected))
                 setTestState(getString(R.string.connection_not_connected))
-//                binding.layoutTest.isFocusable = false
+                binding.layoutTest.isFocusable = false
             }
             hideCircle()
         }
