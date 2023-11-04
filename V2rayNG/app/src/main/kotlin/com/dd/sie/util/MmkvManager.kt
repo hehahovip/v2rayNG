@@ -1,5 +1,6 @@
 package com.dd.sie.util
 
+import com.dd.sie.AppConfig
 import com.google.gson.Gson
 import com.tencent.mmkv.MMKV
 import com.dd.sie.dto.ServerAffiliationInfo
@@ -177,7 +178,7 @@ object MmkvManager {
         mainStorage?.encode(KEY_ANG_CONFIGS, Gson().toJson(serverList))
     }
 
-    fun findFastestServer() : String {
+    fun getFastestServer() : String {
         data class ServerDelay(var guid: String, var testDelayMillis: Long)
 
         val serverDelays = mutableListOf<ServerDelay>()
@@ -187,6 +188,12 @@ object MmkvManager {
             serverDelays.add(ServerDelay(key, if (delay <= 0L) 999999 else delay))
         }
         serverDelays.sortBy { it.testDelayMillis }
+
         return serverDelays[0].guid
+    }
+
+    fun findFastestServer() {
+        val guid =  this.getFastestServer()
+        mainStorage?.encode(KEY_SELECTED_SERVER, guid)
     }
 }

@@ -137,6 +137,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun testAllRealPinginMain() {
+        MessageUtil.sendMsg2TestService(getApplication(), com.dd.sie.AppConfig.MSG_MEASURE_CONFIG_CANCEL, "")
+        MmkvManager.clearAllTestDelayResults()
+        updateListAction.value = -1 // update all
+
+         // without Dispatchers.Default viewModelScope will launch in main thread
+        for (item in serversCache) {
+            val config = V2rayConfigUtil.getV2rayConfig(getApplication(), item.guid)
+            if (config.status) {
+                val result = SpeedtestUtil.realPing(config.content)
+                MmkvManager.encodeServerTestDelayMillis(item.guid, result)
+            }
+        }
+        updateListAction.value = -1 // update all
+
+    }
+
     fun testCurrentServerRealPing() {
         MessageUtil.sendMsg2Service(getApplication(), com.dd.sie.AppConfig.MSG_MEASURE_DELAY, "")
     }

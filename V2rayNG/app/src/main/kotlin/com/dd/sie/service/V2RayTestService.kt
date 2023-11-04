@@ -3,10 +3,13 @@ package com.dd.sie.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
+import com.dd.sie.AppConfig
 import com.dd.sie.AppConfig.MSG_MEASURE_CONFIG
 import com.dd.sie.AppConfig.MSG_MEASURE_CONFIG_CANCEL
 import com.dd.sie.AppConfig.MSG_MEASURE_CONFIG_SUCCESS
 import com.dd.sie.util.MessageUtil
+import com.dd.sie.util.MmkvManager
 import com.dd.sie.util.SpeedtestUtil
 import com.dd.sie.util.Utils
 import go.Seq
@@ -29,6 +32,8 @@ class V2RayTestService : Service() {
                 val contentPair = intent.getSerializableExtra("content") as Pair<String, String>
                 realTestScope.launch {
                     val result = SpeedtestUtil.realPing(contentPair.second)
+                    MmkvManager.encodeServerTestDelayMillis(contentPair.first, result)
+                    Log.d("SIE", String.format("",result))
                     MessageUtil.sendMsg2UI(this@V2RayTestService, MSG_MEASURE_CONFIG_SUCCESS, Pair(contentPair.first, result))
                 }
             }

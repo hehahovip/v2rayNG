@@ -1,6 +1,7 @@
 package com.dd.sie.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
 import android.net.VpnService
@@ -106,7 +107,6 @@ class MainSieActivity : BaseActivity() {
 
         initLoadNodesConfig()
 
-//        wifiFunc()
         checkAutoStart()
     }
 
@@ -116,10 +116,18 @@ class MainSieActivity : BaseActivity() {
 
         if(autoStartFlag) {
 //            mainViewModel.testAllRealPing()
-            var fastserver = MmkvManager.findFastestServer()
-            Log.d("SIE", fastserver)
-            var server = MmkvManager.decodeServerConfig(fastserver)
-            Log.d("SIE", server.toString())
+//            var fastserver = MmkvManager.findFastestServer()
+//            Log.d("SIE", fastserver)
+//            var server = MmkvManager.decodeServerConfig(fastserver)
+//            Log.d("SIE", server.toString())
+//            adapter.setSelectedItem(mainViewModel.getPosition(fastserver))
+
+//            startV2Ray()
+            Log.d("SIE", "AutoStarting...")
+            mainViewModel.reloadServerList()
+            mainViewModel.testAllRealPinginMain()
+            MmkvManager.findFastestServer()
+            V2RayServiceManager.startV2Ray(this)
 
         }
     }

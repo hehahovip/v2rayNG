@@ -2,12 +2,11 @@ package com.dd.sie.ui
 
 import android.graphics.Color
 import android.text.TextUtils
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.tencent.mmkv.MMKV
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.dd.sie.R
 import com.dd.sie.databinding.ItemRecyclerFooterBinding
 import com.dd.sie.databinding.ItemRecyclerMainSieBinding
@@ -18,6 +17,7 @@ import com.dd.sie.service.V2RayServiceManager
 import com.dd.sie.util.AngConfigManager
 import com.dd.sie.util.MmkvManager
 import com.dd.sie.util.Utils
+import com.tencent.mmkv.MMKV
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
@@ -37,6 +37,12 @@ class MainSieRecyclerAdapter(val activity: MainSieActivity) : RecyclerView.Adapt
         mActivity.resources.getStringArray(R.array.share_method)
     }
     var isRunning = false
+
+    private var selectedItem = -1
+
+    fun setSelectedItem(position: Int) {
+        selectedItem = position
+    }
 
     override fun getItemCount() = mActivity.mainViewModel.serversCache.size + 1
 
