@@ -108,6 +108,8 @@ class MainSieActivity : BaseActivity() {
         initLoadNodesConfig()
 
         checkAutoStart()
+
+        wifiFunc()
     }
 
     private fun checkAutoStart() {
@@ -115,31 +117,21 @@ class MainSieActivity : BaseActivity() {
         val autoStartFlag = defaultSharedPreferences.getBoolean(com.dd.sie.AppConfig.PREF_AUTO_START, false)
 
         if(autoStartFlag) {
-//            mainViewModel.testAllRealPing()
-//            var fastserver = MmkvManager.findFastestServer()
-//            Log.d("SIE", fastserver)
-//            var server = MmkvManager.decodeServerConfig(fastserver)
-//            Log.d("SIE", server.toString())
-//            adapter.setSelectedItem(mainViewModel.getPosition(fastserver))
-
-//            startV2Ray()
             Log.d("SIE", "AutoStarting...")
             mainViewModel.reloadServerList()
             mainViewModel.testAllRealPinginMain()
             MmkvManager.findFastestServer()
             V2RayServiceManager.startV2Ray(this)
-
         }
     }
 
     private fun wifiFunc() {
         var wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         if(wifiManager.isWifiEnabled) {
-            Log.d("v2rayNG","wifiManager is enabled!")
+            Log.d("SIE","wifiManager is enabled!")
         } else {
-            Log.d("v2rayNG","wifiManager is disabled!")
+            Log.d("SIE","wifiManager is disabled!")
         }
-        Log.d("v2rayNG", SIEUtils.generateDownloadID())
 
         var p2pManager = applicationContext.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
 
