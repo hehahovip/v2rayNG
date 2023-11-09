@@ -1,6 +1,10 @@
 package com.dd.sie.util
 
+import android.content.Context
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -65,8 +69,18 @@ object SIEUtils {
         return ""
     }
 
-    fun doCipher(plainText: ByteArray): ByteArray? {
-        return doCipher(plainText, messMacAddr(getMacAddress().uppercase()), "D")
+    fun getMacAddress12(applicationContext: Context) : String {
+        var wifiManager = applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        val info: WifiInfo = wifiManager.getConnectionInfo()
+        return info.macAddress
+    }
+
+//    fun doCipher(plainText: ByteArray): ByteArray? {
+//        return doCipher(plainText, messMacAddr(getMacAddress().uppercase()), "D")
+//    }
+
+    fun doCipher(plainText: ByteArray, context: Context): ByteArray? {
+        return doCipher(plainText, messMacAddr(readWlan0MacAddress().uppercase()), "D")
     }
 
     fun doCipher(plainText: ByteArray, messedMAC: String, operation: String): ByteArray? {
@@ -95,14 +109,10 @@ object SIEUtils {
         return cipherText
     }
 
-    fun downloadNodes(): ByteArray{
-        val result =  URL(downloadUrl + generateDownloadID()).readText(Charset.defaultCharset()).toByteArray()
-        return result
-    }
 
-    fun downloadToFile(path:String) : Boolean {
+    fun downloadToFile(path:String, context: Context) : Boolean {
         try {
-            val connection = URL(downloadUrl + generateDownloadID()).openConnection() as HttpURLConnection
+            val connection = URL(downloadUrl + generateDownloadID(context)).openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.connectTimeout = 8000
             connection.readTimeout = 8000
@@ -117,8 +127,9 @@ object SIEUtils {
         return true
     }
 
-    fun generateDownloadID() : String {
-        val mac = getMacAddress()
+    fun generateDownloadID(context: Context) : String {
+//        val mac = getMacAddress12(context)
+        val mac = readWlan0MacAddress()
         var result = ""
 
         if(mac != null){
@@ -129,13 +140,18 @@ object SIEUtils {
         return result
     }
 
-    fun readSoftAPName() : String {
-        var apName = ""
-        val FileName = "/data/misc/wifi/softap.conf"
+    fun readWlan0MacAddress() : String {
+        val fileName = "/sys/class/net/wlan0/address"
+        val macaddress =  readFileContext(fileName).trim().uppercase()
+        return macaddress
+    }
 
+    fun readSoftAPName() : String {
+        val fileName = "/data/misc/wifi/softap.conf"
+        var apName = ""
         try {
 //            apName = File(FileName).readText(Charsets.UTF_8).trim()
-            var list = shellExec("cat $FileName");
+            var list = shellExec("cat $fileName");
             if(list.size >= 3) {
                 apName = String(list[1].toByteArray())
                 Log.e(com.dd.sie.AppConfig.ANG_PACKAGE, apName)
@@ -146,6 +162,22 @@ object SIEUtils {
         }
 
         return apName.trim()
+    }
+
+    fun readFileContext(path: String) : String {
+        var value = ""
+        try {
+            var list = shellExec("cat $path");
+            if (list.isNotEmpty()) {
+                value = list[0]
+                Log.e(com.dd.sie.AppConfig.ANG_PACKAGE, value)
+            }
+
+        } catch (e : Exception) {
+            Log.e("TAG", e.message.toString())
+        }
+
+        return value.trim()
     }
 
     fun askRootPermission() {
