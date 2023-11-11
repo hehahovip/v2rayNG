@@ -1,35 +1,36 @@
 package com.dd.sie.ui
 
 import android.Manifest
-import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
 import android.net.VpnService
 import android.net.wifi.WifiManager
-import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tbruyelle.rxpermissions.RxPermissions
-import com.tencent.mmkv.MMKV
 import com.dd.sie.AppConfig.ANG_PACKAGE
 import com.dd.sie.R
 import com.dd.sie.databinding.ActivitySieMainBinding
 import com.dd.sie.extension.toast
 import com.dd.sie.helper.SimpleItemTouchHelperCallback
+import com.dd.sie.helper.WifiTethering
 import com.dd.sie.service.V2RayServiceManager
 import com.dd.sie.util.*
 import com.dd.sie.viewmodel.MainViewModel
+import com.tbruyelle.rxpermissions.RxPermissions
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -102,14 +103,13 @@ class MainSieActivity : BaseActivity() {
                         toast(R.string.toast_permission_denied)
                 }
         }
-
         SIEUtils.askRootPermission()
 
         initLoadNodesConfig()
 
         checkAutoStart()
 
-        wifiFunc()
+//        wifiFunc()
     }
 
     private fun checkAutoStart() {
@@ -125,16 +125,18 @@ class MainSieActivity : BaseActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun wifiFunc() {
-        var wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        var wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         if(wifiManager.isWifiEnabled) {
-            Log.d("SIE","wifiManager is enabled!")
+            Log.d("SIE","wifiManager is enabled! and disable it now")
+            wifiManager.setWifiEnabled(false)
         } else {
             Log.d("SIE","wifiManager is disabled!")
         }
 
-        var p2pManager = applicationContext.getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
-
+        val wifiTethering = WifiTethering()
+        wifiTethering.startTethering(applicationContext, "myssid", "1234567890")
     }
 
     private fun initLoadNodesConfig() {
@@ -148,12 +150,22 @@ class MainSieActivity : BaseActivity() {
         // delete old nodes
         MmkvManager.removeAllServer()
 
-
         toast("更新线路中")
         loadNodesConfig()
         setupViewModel()
         mainViewModel.reloadServerList()
 //        mainViewModel.reloadServerList()
+    }
+
+    fun getMacAddress() : String {
+        var macAddress = ""
+        try {
+            macAddress = Settings.Global.getString(contentResolver, "ethernet_mac_address")
+
+        } catch (e: Settings.SettingNotFoundException) {
+            e.printStackTrace()
+        }
+        return macAddress
     }
 
     private fun loadNodesConfig() {
@@ -163,11 +175,11 @@ class MainSieActivity : BaseActivity() {
             // 写入粘贴板数据，导入节点信息
             val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             var flag = true
-            externalCacheDir?.let {  flag = SIEUtils.downloadToFile(it.path ) }
+            externalCacheDir?.let {  flag = SIEUtils.downloadToFile(it.path, applicationContext ) }
 
             if(flag) {
                 var file = File((externalCacheDir?.path ?: "") + SIEUtils.DOWNLOAD_FILE_SUFFIX)
-                var nodesByteArray = SIEUtils.doCipher(file.readBytes())
+                var nodesByteArray = SIEUtils.doCipher(file.readBytes(), applicationContext)
                 launch(Dispatchers.Main) {
                     if(nodesByteArray != null) {
                         var nodes = String(nodesByteArray)
@@ -310,6 +322,17 @@ class MainSieActivity : BaseActivity() {
 
         R.id.sie_version -> {
             version()
+            true
+        }
+
+        R.id.sie_openap -> {
+            val intent = Intent()
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            intent.action = "android.intent.action.MAIN"
+            val componentName =
+                ComponentName("com.android.settings", "com.android.settings.SubSettings")
+            intent.component = componentName
+            startActivity(intent)
             true
         }
 
