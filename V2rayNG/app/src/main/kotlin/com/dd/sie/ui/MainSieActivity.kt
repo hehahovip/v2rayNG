@@ -25,7 +25,6 @@ import com.dd.sie.R
 import com.dd.sie.databinding.ActivitySieMainBinding
 import com.dd.sie.extension.toast
 import com.dd.sie.helper.SimpleItemTouchHelperCallback
-import com.dd.sie.helper.WifiTethering
 import com.dd.sie.service.V2RayServiceManager
 import com.dd.sie.util.*
 import com.dd.sie.viewmodel.MainViewModel
@@ -135,8 +134,14 @@ class MainSieActivity : BaseActivity() {
             Log.d("SIE","wifiManager is disabled!")
         }
 
-        val wifiTethering = WifiTethering()
-        wifiTethering.startTethering(applicationContext, "myssid", "1234567890")
+//        val wifiTethering = WifiTethering()
+//        wifiTethering.startTethering(applicationContext, "myssid", "1234567890")
+        val intent = Intent()
+        intent.action = Settings.ACTION_WIFI_SETTINGS
+//        intent.addCategory(Intent.CATEGORY_DEFAULT)
+//        var cn = ComponentName(Settings.ACTION_WIRELESS_SETTINGS, "com.android.settings.SubSettings")
+//        intent.component = cn
+        startActivity(intent)
     }
 
     private fun initLoadNodesConfig() {
@@ -155,17 +160,6 @@ class MainSieActivity : BaseActivity() {
         setupViewModel()
         mainViewModel.reloadServerList()
 //        mainViewModel.reloadServerList()
-    }
-
-    fun getMacAddress() : String {
-        var macAddress = ""
-        try {
-            macAddress = Settings.Global.getString(contentResolver, "ethernet_mac_address")
-
-        } catch (e: Settings.SettingNotFoundException) {
-            e.printStackTrace()
-        }
-        return macAddress
     }
 
     private fun loadNodesConfig() {
@@ -327,11 +321,7 @@ class MainSieActivity : BaseActivity() {
 
         R.id.sie_openap -> {
             val intent = Intent()
-            intent.addCategory(Intent.CATEGORY_DEFAULT)
-            intent.action = "android.intent.action.MAIN"
-            val componentName =
-                ComponentName("com.android.settings", "com.android.settings.SubSettings")
-            intent.component = componentName
+            intent.action = Settings.ACTION_WIFI_SETTINGS
             startActivity(intent)
             true
         }
