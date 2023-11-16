@@ -321,7 +321,7 @@ class MainSieActivity : BaseActivity() {
 
         R.id.sie_openap -> {
             val intent = Intent()
-            intent.action = Settings.ACTION_WIFI_SETTINGS
+            intent.action = Settings.ACTION_WIRELESS_SETTINGS
             startActivity(intent)
             true
         }
