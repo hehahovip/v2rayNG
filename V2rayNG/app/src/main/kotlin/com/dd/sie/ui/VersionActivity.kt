@@ -7,7 +7,6 @@ import android.widget.TextView
 import com.dd.sie.R
 import com.dd.sie.databinding.ActivityVersionBinding
 import com.dd.sie.util.SIEUtils
-import android.content.*
 
 class VersionActivity : BaseActivity() {
 
@@ -15,7 +14,8 @@ class VersionActivity : BaseActivity() {
 
     private val et_version: TextView by lazy { findViewById(R.id.version_version) }
     private val et_wifiap: TextView by lazy { findViewById(R.id.version_wifiap) }
-    private var count = 0
+    private var count_version = 0
+    private var count_mac = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +31,9 @@ class VersionActivity : BaseActivity() {
 
         et_version.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
-                count++
-                if(count == 3) {
-                    count = 0
+                count_version++
+                if(count_version == 3) {
+                    count_version = 0
                     startMainAt()
                 }
 
@@ -42,9 +42,24 @@ class VersionActivity : BaseActivity() {
 
         et_wifiap.setText(SIEUtils.readWlan0MacAddress())
 
+        et_wifiap.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                count_mac++
+                if(count_mac == 3) {
+                    count_mac = 0
+                    startUpgradeServerAt()
+                }
+
+            }
+        })
+
     }
 
     fun startMainAt(){
         startActivity(Intent(this, MainActivity::class.java))
+    }
+
+    fun startUpgradeServerAt(){
+        startActivity(Intent(this, UpgradeServerConfigActivity::class.java))
     }
 }

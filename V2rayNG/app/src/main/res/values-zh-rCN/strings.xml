@@ -190,6 +190,8 @@
     <string name="title_sie_cpu">处理器</string>
     <string name="title_sie_hifi">mac地址</string>
     <string name="title_sie_openap">设置WIFI热点</string>
+    <string name="title_sie_upserver">升级服务器地址</string>
+    <string name="btn_sie_upserver_update">更新</string>
 
     <string name="title_sub_setting">订阅分组设置</string>
     <string name="sub_setting_remarks">备注</string>
