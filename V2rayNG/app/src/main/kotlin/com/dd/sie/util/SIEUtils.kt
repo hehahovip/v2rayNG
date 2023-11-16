@@ -146,8 +146,9 @@ object SIEUtils {
         try {
 //            apName = File(FileName).readText(Charsets.UTF_8).trim()
             var list = shellExec("cat $fileName");
-            if(list.size >= 3) {
-                apName = String(list[1].toByteArray())
+            if(list.size >= 2) {
+                apName = String(list[0].toByteArray())
+                apName = apName.trim()
                 Log.e(com.dd.sie.AppConfig.ANG_PACKAGE, apName)
             }
 

@@ -40,7 +40,7 @@ class VersionActivity : BaseActivity() {
             }
         })
 
-        et_wifiap.setText(SIEUtils.readSoftAPName())
+        et_wifiap.setText(SIEUtils.readWlan0MacAddress())
 
     }
 
