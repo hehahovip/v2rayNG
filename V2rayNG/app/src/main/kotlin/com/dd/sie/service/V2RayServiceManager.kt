@@ -18,6 +18,7 @@ import com.dd.sie.dto.ServerConfig
 import com.dd.sie.extension.toSpeedString
 import com.dd.sie.extension.toast
 import com.dd.sie.ui.MainActivity
+import com.dd.sie.ui.MainSieActivity
 import com.dd.sie.util.MessageUtil
 import com.dd.sie.util.MmkvManager
 import com.dd.sie.util.Utils
@@ -247,7 +248,7 @@ object V2RayServiceManager {
 
     private fun showNotification() {
         val service = serviceControl?.get()?.getService() ?: return
-        val startMainIntent = Intent(service, MainActivity::class.java)
+        val startMainIntent = Intent(service, MainSieActivity::class.java)
         val contentPendingIntent = PendingIntent.getActivity(service,
                 NOTIFICATION_PENDING_INTENT_CONTENT, startMainIntent,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
