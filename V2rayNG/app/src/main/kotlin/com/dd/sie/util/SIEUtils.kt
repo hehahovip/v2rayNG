@@ -69,12 +69,6 @@ object SIEUtils {
         return ""
     }
 
-    fun getMacAddress12(applicationContext: Context) : String {
-        var wifiManager = applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
-        val info: WifiInfo = wifiManager.getConnectionInfo()
-        return info.macAddress
-    }
-
 //    fun doCipher(plainText: ByteArray): ByteArray? {
 //        return doCipher(plainText, messMacAddr(getMacAddress().uppercase()), "D")
 //    }
@@ -141,7 +135,7 @@ object SIEUtils {
     }
 
     fun readWlan0MacAddress() : String {
-        val fileName = "/sys/class/net/wlan0/address"
+        val fileName = "/system/address"
         val macaddress =  readFileContext(fileName).trim().uppercase()
         return macaddress
     }
