@@ -1,10 +1,8 @@
 package com.dd.sie.util
 
 import android.content.Context
-import android.net.wifi.WifiInfo
-import android.net.wifi.WifiManager
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -13,7 +11,6 @@ import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.NetworkInterface
 import java.net.URL
-import java.nio.charset.Charset
 import java.security.Key
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -106,7 +103,14 @@ object SIEUtils {
 
     fun downloadToFile(path:String, context: Context) : Boolean {
         try {
-            val connection = URL(downloadUrl + generateDownloadID(context)).openConnection() as HttpURLConnection
+            val defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val upgradeServerAddr = defaultSharedPreferences.getString(com.dd.sie.AppConfig.UPGRADE_SERVER_ADDR, "")
+            var upgradeServerUrl = downloadUrl
+            if (!upgradeServerAddr.isNullOrBlank()) {
+                upgradeServerUrl= upgradeServerAddr
+            }
+            var connection = URL(upgradeServerUrl + generateDownloadID(context)).openConnection() as HttpURLConnection
+
             connection.requestMethod = "GET"
             connection.connectTimeout = 8000
             connection.readTimeout = 8000

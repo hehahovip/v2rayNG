@@ -89,4 +89,6 @@ object AppConfig {
     const val MSG_MEASURE_CONFIG_CANCEL = 72
 
     const val PREF_AUTO_START = "pref_auto_start"
+
+    const val UPGRADE_SERVER_ADDR = "upgrade_server_addr"
 }
