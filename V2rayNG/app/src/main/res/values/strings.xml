@@ -229,6 +229,9 @@
     <string name="title_sie_openap">设置WIFI热点</string>
     <string name="title_sie_upserver">升级服务器地址</string>
     <string name="btn_sie_upserver_update">更新</string>
+    <string name="msg_mac_address_can_not_be_found">无法找到Mac地址</string>
+    <string name="msg_cipher_failed">解析配置文件出错！</string>
+    <string name="msg_download_file_failed">下载文件出错！</string>
 
     <string-array name="share_method">
         <item>QRcode</item>

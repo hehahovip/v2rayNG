@@ -152,8 +152,6 @@ class MainSieActivity : BaseActivity() {
     }
 
     private fun updateSub() {
-        // delete old nodes
-        MmkvManager.removeAllServer()
 
         toast("更新线路中")
         loadNodesConfig()
@@ -165,15 +163,20 @@ class MainSieActivity : BaseActivity() {
     private fun loadNodesConfig() {
 
         val scope = CoroutineScope(Job() + Dispatchers.IO)
+        val activity = this
         val job = scope.launch {
             // 写入粘贴板数据，导入节点信息
             val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            var flag = true
-            externalCacheDir?.let {  flag = SIEUtils.downloadToFile(it.path, applicationContext ) }
+            var flag = false
+            externalCacheDir?.let {
+                flag = SIEUtils.downloadToFile(it.path, activity, applicationContext )
+            }
 
             if(flag) {
+                // delete old nodes
+                MmkvManager.removeAllServer()
                 var file = File((externalCacheDir?.path ?: "") + SIEUtils.DOWNLOAD_FILE_SUFFIX)
-                var nodesByteArray = SIEUtils.doCipher(file.readBytes(), applicationContext)
+                var nodesByteArray = SIEUtils.doCipher(file.readBytes(), activity, applicationContext)
                 launch(Dispatchers.Main) {
                     if(nodesByteArray != null) {
                         var nodes = String(nodesByteArray)

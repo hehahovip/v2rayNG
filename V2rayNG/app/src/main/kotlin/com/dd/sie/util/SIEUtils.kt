@@ -1,8 +1,12 @@
 package com.dd.sie.util
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import androidx.preference.PreferenceManager
+import com.dd.sie.R
+import com.dd.sie.ui.MainSieActivity
+import me.drakeet.support.toast.ToastCompat
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -70,11 +74,11 @@ object SIEUtils {
 //        return doCipher(plainText, messMacAddr(getMacAddress().uppercase()), "D")
 //    }
 
-    fun doCipher(plainText: ByteArray, context: Context): ByteArray? {
-        return doCipher(plainText, messMacAddr(readWlan0MacAddress().uppercase()), "D")
+    fun doCipher(plainText: ByteArray, activity: Activity, context: Context): ByteArray? {
+        return doCipher(plainText, messMacAddr(readWlan0MacAddress().uppercase()), "D", activity, context)
     }
 
-    fun doCipher(plainText: ByteArray, messedMAC: String, operation: String): ByteArray? {
+    fun doCipher(plainText: ByteArray, messedMAC: String, operation: String, activity: Activity, context: Context): ByteArray? {
         var cipherText: ByteArray? = null
         var des: Cipher
         var sRandom = SecureRandom()
@@ -96,12 +100,16 @@ object SIEUtils {
 
         } catch (e: Exception) {
             Log.e("SIE", "Cipher failed: ", e)
+            activity.runOnUiThread {
+                ToastCompat.makeText(context, R.string.msg_cipher_failed, ToastCompat.LENGTH_LONG)
+            }
+
         }
         return cipherText
     }
 
 
-    fun downloadToFile(path:String, context: Context) : Boolean {
+    fun downloadToFile(path:String, activity: Activity, context: Context) : Boolean {
         try {
             val defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             val upgradeServerAddr = defaultSharedPreferences.getString(com.dd.sie.AppConfig.UPGRADE_SERVER_ADDR, "")
@@ -109,7 +117,7 @@ object SIEUtils {
             if (!upgradeServerAddr.isNullOrBlank()) {
                 upgradeServerUrl= upgradeServerAddr
             }
-            var connection = URL(upgradeServerUrl + generateDownloadID(context)).openConnection() as HttpURLConnection
+            var connection = URL(upgradeServerUrl + generateDownloadID(activity, context)).openConnection() as HttpURLConnection
 
             connection.requestMethod = "GET"
             connection.connectTimeout = 8000
@@ -120,15 +128,26 @@ object SIEUtils {
             connection.inputStream.buffered().copyTo(file.outputStream())
         } catch(e: Exception) {
             Log.e("SIE", e.message, e)
+
+            activity.runOnUiThread {
+                ToastCompat.makeText(context, R.string.msg_download_file_failed, ToastCompat.LENGTH_LONG)
+            }
             return false
         }
         return true
     }
 
-    fun generateDownloadID(context: Context) : String {
+    fun generateDownloadID(activity:Activity, context: Context) : String {
 //        val mac = getMacAddress12(context)
         val mac = readWlan0MacAddress()
         var result = ""
+
+        if (mac.isEmpty()) {
+            activity.runOnUiThread {
+                ToastCompat.makeText(context, R.string.msg_mac_address_can_not_be_found, ToastCompat.LENGTH_LONG)
+            }
+            return result
+        }
 
         if(mac != null){
             val md = MessageDigest.getInstance("MD5")
@@ -139,7 +158,8 @@ object SIEUtils {
     }
 
     fun readWlan0MacAddress() : String {
-        val fileName = "/system/address"
+//        val fileName = "/system/address"
+        val fileName = "/storage/emulated/0/sie/address"
         val macaddress =  readFileContext(fileName).trim().uppercase()
         return macaddress
     }
