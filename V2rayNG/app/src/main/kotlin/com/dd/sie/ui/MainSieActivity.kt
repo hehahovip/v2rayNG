@@ -25,6 +25,7 @@ import com.dd.sie.R
 import com.dd.sie.databinding.ActivitySieMainBinding
 import com.dd.sie.extension.toast
 import com.dd.sie.helper.SimpleItemTouchHelperCallback
+import com.dd.sie.helper.WifiTethering
 import com.dd.sie.service.V2RayServiceManager
 import com.dd.sie.util.*
 import com.dd.sie.viewmodel.MainViewModel
@@ -126,22 +127,24 @@ class MainSieActivity : BaseActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun wifiFunc() {
-        var wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        if(wifiManager.isWifiEnabled) {
-            Log.d("SIE","wifiManager is enabled! and disable it now")
-            wifiManager.setWifiEnabled(false)
-        } else {
-            Log.d("SIE","wifiManager is disabled!")
-        }
+//        var wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+//        if(wifiManager.isWifiEnabled) {
+//            Log.d("SIE","wifiManager is enabled! and disable it now")
+//            wifiManager.setWifiEnabled(false)
+//        } else {
+//            Log.d("SIE","wifiManager is disabled!")
+//        }
 
 //        val wifiTethering = WifiTethering()
 //        wifiTethering.startTethering(applicationContext, "myssid", "1234567890")
-        val intent = Intent()
-        intent.action = Settings.ACTION_WIFI_SETTINGS
+//        val intent = Intent()
+//        intent.action = Settings.ACTION_WIFI_SETTINGS
 //        intent.addCategory(Intent.CATEGORY_DEFAULT)
-//        var cn = ComponentName(Settings.ACTION_WIRELESS_SETTINGS, "com.android.settings.SubSettings")
+//        var cn = ComponentName(Settings.ACTION_WIRELESS_SETTINGS, "com.android.settings.Settings$TetherSettingsActivity")
 //        intent.component = cn
-        startActivity(intent)
+//        startActivity(intent)
+        var tethering = WifiTethering()
+        tethering.gotoHotAPSetting(this)
     }
 
     private fun initLoadNodesConfig() {
@@ -323,9 +326,7 @@ class MainSieActivity : BaseActivity() {
         }
 
         R.id.sie_openap -> {
-            val intent = Intent()
-            intent.action = Settings.ACTION_WIRELESS_SETTINGS
-            startActivity(intent)
+            wifiFunc()
             true
         }
 
