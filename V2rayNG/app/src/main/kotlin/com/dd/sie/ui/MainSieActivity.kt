@@ -125,24 +125,7 @@ class MainSieActivity : BaseActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun wifiFunc() {
-//        var wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-//        if(wifiManager.isWifiEnabled) {
-//            Log.d("SIE","wifiManager is enabled! and disable it now")
-//            wifiManager.setWifiEnabled(false)
-//        } else {
-//            Log.d("SIE","wifiManager is disabled!")
-//        }
-
-//        val wifiTethering = WifiTethering()
-//        wifiTethering.startTethering(applicationContext, "myssid", "1234567890")
-//        val intent = Intent()
-//        intent.action = Settings.ACTION_WIFI_SETTINGS
-//        intent.addCategory(Intent.CATEGORY_DEFAULT)
-//        var cn = ComponentName(Settings.ACTION_WIRELESS_SETTINGS, "com.android.settings.Settings$TetherSettingsActivity")
-//        intent.component = cn
-//        startActivity(intent)
         var tethering = WifiTethering()
         tethering.gotoHotAPSetting(this)
     }
