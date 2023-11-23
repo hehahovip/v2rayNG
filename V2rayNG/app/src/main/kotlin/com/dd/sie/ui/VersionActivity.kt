@@ -13,6 +13,7 @@ class VersionActivity : BaseActivity() {
     private lateinit var binding: ActivityVersionBinding
 
     private val et_version: TextView by lazy { findViewById(R.id.version_version) }
+    private val et_cpu: TextView by lazy { findViewById(R.id.version_cpu) }
     private val et_wifiap: TextView by lazy { findViewById(R.id.version_wifiap) }
     private var count_version = 0
     private var count_mac = 0
@@ -27,7 +28,8 @@ class VersionActivity : BaseActivity() {
 
         binding = ActivityVersionBinding.inflate(layoutInflater)
 
-        binding.versionCpu.setText("SystemEnv")
+//        binding.versionCpu.setText("SystemEnv")
+        et_cpu.setText("Snapdragon 870")
 
         et_version.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
