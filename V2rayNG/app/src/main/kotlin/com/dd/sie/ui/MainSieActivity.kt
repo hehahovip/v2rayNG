@@ -1,6 +1,7 @@
 package com.dd.sie.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.*
 import android.content.res.ColorStateList
 import android.net.VpnService
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -32,6 +34,7 @@ import com.dd.sie.viewmodel.MainViewModel
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.*
+import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
@@ -51,6 +54,7 @@ class MainSieActivity : BaseActivity() {
     }
     private var mItemTouchHelper: ItemTouchHelper? = null
     val mainViewModel: MainViewModel by viewModels()
+    val activity: Activity by lazy {this}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,13 +107,14 @@ class MainSieActivity : BaseActivity() {
                         toast(R.string.toast_permission_denied)
                 }
         }
-        SIEUtils.askRootPermission()
+
 
         initLoadNodesConfig()
 
         checkAutoStart()
 
-//        wifiFunc()
+        SIEUtils.askRootPermission()
+
     }
 
     private fun checkAutoStart() {
@@ -128,6 +133,7 @@ class MainSieActivity : BaseActivity() {
     private fun wifiFunc() {
         var tethering = WifiTethering()
         tethering.gotoHotAPSetting(this)
+//        tethering.gotoDataUsageSetting(this)
     }
 
     private fun initLoadNodesConfig() {
@@ -138,12 +144,10 @@ class MainSieActivity : BaseActivity() {
     }
 
     private fun updateSub() {
-
         toast("更新线路中")
         loadNodesConfig()
         setupViewModel()
         mainViewModel.reloadServerList()
-//        mainViewModel.reloadServerList()
     }
 
     private fun loadNodesConfig() {
@@ -284,7 +288,13 @@ class MainSieActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.sie_real_ping_all -> {
-            mainViewModel.testAllRealPing()
+            if(mainViewModel.isRunning.value == true) {
+                // 运行中，关闭节点连接再测试
+                toast(R.string.msg_stop_service_first)
+            } else {
+                mainViewModel.testAllRealPing()
+            }
+
             true
         }
 

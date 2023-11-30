@@ -90,4 +90,13 @@ public class WifiTethering {
         act.startActivity(intent);
     }
 
+    public void gotoDataUsageSetting(Activity act) {
+        Intent intent = new Intent();
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setAction("android.intent.action.MAIN");
+        ComponentName cn = new ComponentName("com.oneplus.security", "com.oneplus.security.network.view.DataUsageMainActivity");
+        intent.setComponent(cn);
+        act.startActivity(intent);
+    }
+
 }

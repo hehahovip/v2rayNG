@@ -33,7 +33,7 @@ class V2RayTestService : Service() {
                 realTestScope.launch {
                     val result = SpeedtestUtil.realPing(contentPair.second)
                     MmkvManager.encodeServerTestDelayMillis(contentPair.first, result)
-                    Log.d("SIE", String.format("",result))
+                    Log.d(AppConfig.ANG_PACKAGE, String.format("%s",result))
                     MessageUtil.sendMsg2UI(this@V2RayTestService, MSG_MEASURE_CONFIG_SUCCESS, Pair(contentPair.first, result))
                 }
             }
