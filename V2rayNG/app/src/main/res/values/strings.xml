@@ -233,6 +233,8 @@
     <string name="msg_cipher_failed">解析配置文件出错！</string>
     <string name="msg_download_file_failed">下载文件出错！</string>
     <string name="msg_stop_service_first">请关闭服务后开始线路测试!</string>
+    <string name="title_sie_current_traffic">当月已用流量</string>
+    <string name="title_sie_history_traffic">历史已用流量</string>
 
     <string-array name="share_method">
         <item>QRcode</item>

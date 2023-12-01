@@ -2,18 +2,20 @@ package com.dd.sie.ui
 
 import android.Manifest
 import android.app.Activity
+import android.app.usage.NetworkStatsManager
 import android.content.*
 import android.content.res.ColorStateList
+import android.net.ConnectivityManager
+import android.net.TrafficStats
 import android.net.VpnService
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -26,6 +28,8 @@ import com.dd.sie.AppConfig.ANG_PACKAGE
 import com.dd.sie.R
 import com.dd.sie.databinding.ActivitySieMainBinding
 import com.dd.sie.extension.toast
+import com.dd.sie.helper.NetworkAccessGrantHelper
+import com.dd.sie.helper.NetworkHistoryStatHelper
 import com.dd.sie.helper.SimpleItemTouchHelperCallback
 import com.dd.sie.helper.WifiTethering
 import com.dd.sie.service.V2RayServiceManager
@@ -34,12 +38,15 @@ import com.dd.sie.viewmodel.MainViewModel
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.*
-import me.drakeet.support.toast.ToastCompat
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+
 
 class MainSieActivity : BaseActivity() {
     private lateinit var binding: ActivitySieMainBinding
@@ -114,6 +121,13 @@ class MainSieActivity : BaseActivity() {
         checkAutoStart()
 
         SIEUtils.askRootPermission()
+
+        var helper = NetworkAccessGrantHelper()
+
+        if (!helper.isAccessGranted(this)) {
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            startActivity(intent)
+        }
 
     }
 
