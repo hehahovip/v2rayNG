@@ -1,13 +1,17 @@
 package com.dd.sie.ui
 
 import android.Manifest
+import android.app.Activity
+import android.app.usage.NetworkStatsManager
 import android.content.*
 import android.content.res.ColorStateList
+import android.net.ConnectivityManager
+import android.net.TrafficStats
 import android.net.VpnService
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
@@ -24,6 +28,8 @@ import com.dd.sie.AppConfig.ANG_PACKAGE
 import com.dd.sie.R
 import com.dd.sie.databinding.ActivitySieMainBinding
 import com.dd.sie.extension.toast
+import com.dd.sie.helper.NetworkAccessGrantHelper
+import com.dd.sie.helper.NetworkHistoryStatHelper
 import com.dd.sie.helper.SimpleItemTouchHelperCallback
 import com.dd.sie.helper.WifiTethering
 import com.dd.sie.service.V2RayServiceManager
@@ -36,7 +42,11 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+
 
 class MainSieActivity : BaseActivity() {
     private lateinit var binding: ActivitySieMainBinding
@@ -51,6 +61,7 @@ class MainSieActivity : BaseActivity() {
     }
     private var mItemTouchHelper: ItemTouchHelper? = null
     val mainViewModel: MainViewModel by viewModels()
+    val activity: Activity by lazy {this}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,13 +114,21 @@ class MainSieActivity : BaseActivity() {
                         toast(R.string.toast_permission_denied)
                 }
         }
-        SIEUtils.askRootPermission()
+
 
         initLoadNodesConfig()
 
         checkAutoStart()
 
-//        wifiFunc()
+        SIEUtils.askRootPermission()
+
+        var helper = NetworkAccessGrantHelper()
+
+        if (!helper.isAccessGranted(this)) {
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            startActivity(intent)
+        }
+
     }
 
     private fun checkAutoStart() {
@@ -128,6 +147,7 @@ class MainSieActivity : BaseActivity() {
     private fun wifiFunc() {
         var tethering = WifiTethering()
         tethering.gotoHotAPSetting(this)
+//        tethering.gotoDataUsageSetting(this)
     }
 
     private fun initLoadNodesConfig() {
@@ -138,12 +158,10 @@ class MainSieActivity : BaseActivity() {
     }
 
     private fun updateSub() {
-
         toast("更新线路中")
         loadNodesConfig()
         setupViewModel()
         mainViewModel.reloadServerList()
-//        mainViewModel.reloadServerList()
     }
 
     private fun loadNodesConfig() {
@@ -284,7 +302,13 @@ class MainSieActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.sie_real_ping_all -> {
-            mainViewModel.testAllRealPing()
+            if(mainViewModel.isRunning.value == true) {
+                // 运行中，关闭节点连接再测试
+                toast(R.string.msg_stop_service_first)
+            } else {
+                mainViewModel.testAllRealPing()
+            }
+
             true
         }
 
