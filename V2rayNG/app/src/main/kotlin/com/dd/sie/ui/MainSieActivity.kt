@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.usage.NetworkStatsManager
 import android.content.*
 import android.content.res.ColorStateList
+import android.graphics.Point
 import android.net.ConnectivityManager
 import android.net.TrafficStats
 import android.net.VpnService
@@ -120,7 +121,7 @@ class MainSieActivity : BaseActivity() {
 
         checkAutoStart()
 
-        SIEUtils.askRootPermission()
+//        SIEUtils.askRootPermission()
 
         var helper = NetworkAccessGrantHelper()
 
@@ -128,6 +129,13 @@ class MainSieActivity : BaseActivity() {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             startActivity(intent)
         }
+
+
+        val windowsManager = window.windowManager
+        val point = Point()
+        windowsManager.defaultDisplay.getRealSize(point)
+        Log.d("SIE", String.format("%d  %d", point.x, point.y))
+
 
     }
 

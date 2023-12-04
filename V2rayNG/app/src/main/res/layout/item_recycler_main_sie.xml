@@ -30,16 +30,16 @@
                 android:id="@+id/layout_indicator"
                 android:layout_width="10dp"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
+                android:layout_gravity="left"
                 android:orientation="vertical" >
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 android:paddingStart="5dp">
 
                 <ImageView
@@ -53,25 +53,25 @@
                     android:layout_height="wrap_content"
                     android:paddingStart="5dp"
                     android:lines="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@color/fab_orange_dark"
-                    android:textSize="10sp" />
+                    android:textSize="10sp"
+                    android:text="VLESS"/>
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="5"
+
                 android:gravity="left"
                 android:orientation="horizontal"
                 android:paddingLeft="15dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:orientation="horizontal">
+                    android:gravity="left"
+                    android:orientation="vertical">
                     <!-- 线路名称文本显示 -->
                     <TextView
                         android:id="@+id/tv_name"
@@ -79,37 +79,32 @@
                         android:layout_height="wrap_content"
                         android:maxLines="2"
                         android:minLines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                        android:text="住宅Chicago"/>
 
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <!-- 线路测试结果文本显示 -->
-
-                <LinearLayout
-                    android:id="@+id/layout_remove"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/server_height"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tv_test_result"
+                    <!-- 线路测试结果文本显示 -->
+                    <LinearLayout
+                        android:id="@+id/layout_remove"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:lines="1"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                        android:textColor="@color/colorPing"
-                        android:gravity="right|center"
-                        android:paddingRight="15dp"
-                        android:textSize="12sp"
-                        tools:text="214ms" />
+                        android:background="?android:attr/selectableItemBackground"
+                        android:gravity="left"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tv_test_result"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="@color/colorPing"
+                            android:gravity="left"
+                            android:paddingRight="15dp"
+                            android:textSize="12sp"
+                            tools:text="214ms" />
+                </LinearLayout>
+
 
                 </LinearLayout>
             </LinearLayout>

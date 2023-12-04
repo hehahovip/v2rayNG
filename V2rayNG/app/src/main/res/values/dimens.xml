@@ -9,7 +9,7 @@
     <dimen name="server_height">72dp</dimen>
     <dimen name="version_height">60dp</dimen>
     <dimen name="connection_test_height">60dp</dimen>
-    <dimen name="version_text_sp">20sp</dimen>
+    <dimen name="version_text_sp">15sp</dimen>
 
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
