@@ -42,7 +42,8 @@ class VersionActivity : BaseActivity() {
 
         binding = ActivityVersionBinding.inflate(layoutInflater)
 
-        binding.versionCpu.setText("SystemEnv")
+//        binding.versionCpu.setText("SystemEnv")
+        et_cpu.setText("Snapdragon 870")
 
         etVersion.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View?) {
