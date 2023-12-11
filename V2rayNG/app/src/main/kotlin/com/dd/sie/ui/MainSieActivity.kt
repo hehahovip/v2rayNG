@@ -121,7 +121,7 @@ class MainSieActivity : BaseActivity() {
 
         checkAutoStart()
 
-//        SIEUtils.askRootPermission()
+        SIEUtils.askRootPermission()
 
         var helper = NetworkAccessGrantHelper()
 
@@ -129,13 +129,6 @@ class MainSieActivity : BaseActivity() {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             startActivity(intent)
         }
-
-
-        val windowsManager = window.windowManager
-        val point = Point()
-        windowsManager.defaultDisplay.getRealSize(point)
-        Log.d("SIE", String.format("%d  %d", point.x, point.y))
-
 
     }
 

@@ -73,15 +73,26 @@
                     android:gravity="left"
                     android:orientation="vertical">
                     <!-- 线路名称文本显示 -->
-                    <TextView
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_name"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:maxLines="2"-->
+<!--                        android:minLines="1"-->
+<!--                        android:textSize="16sp"-->
+<!--                        android:textAppearance="@style/TextAppearance.AppCompat.Headline"-->
+<!--                        android:text="住宅Chicago"/>-->
+                    <com.dd.sie.helper.MarqueeTextView
                         android:id="@+id/tv_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxLines="2"
-                        android:minLines="1"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:focusable="true"
                         android:textSize="16sp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                        android:text="住宅Chicago"/>
+                        android:focusableInTouchMode="true"/>
 
                     <!-- 线路测试结果文本显示 -->
                     <LinearLayout
